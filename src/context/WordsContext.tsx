@@ -1,7 +1,9 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, ReactNode } from "react";
 import { AgeGroup, WordEntry, defaultWordsByAge } from "@/data/words";
+import { fetchWordsFromSheets } from "@/data/sheetsLoader";
 
 const STORAGE_KEY = "oy-words-v1";
+const SHEETS_ID = import.meta.env.VITE_SHEETS_ID || "";
 
 type Dict = Record<AgeGroup, WordEntry[]>;
 
@@ -27,16 +29,37 @@ export function WordsProvider({ children }: { children: ReactNode }) {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    try {
-      const raw = typeof window !== "undefined" ? localStorage.getItem(STORAGE_KEY) : null;
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (parsed && parsed.kids && parsed.teens && parsed.adults) {
-          setWords(parsed);
+    (async () => {
+      try {
+        // Try to load from Google Sheets first if ID is configured
+        if (SHEETS_ID) {
+          const sheetsData = await fetchWordsFromSheets({
+            spreadsheetId: SHEETS_ID,
+          });
+          setWords(sheetsData);
+          setHydrated(true);
+          return;
         }
+      } catch (err) {
+        console.warn("Failed to load from Sheets, falling back to localStorage/defaults", err);
       }
-    } catch {}
-    setHydrated(true);
+
+      // Fallback to localStorage
+      try {
+        const raw = typeof window !== "undefined" ? localStorage.getItem(STORAGE_KEY) : null;
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && parsed.kids && parsed.teens && parsed.adults) {
+            setWords(parsed);
+            setHydrated(true);
+            return;
+          }
+        }
+      } catch {}
+
+      // Final fallback to defaults
+      setHydrated(true);
+    })();
   }, []);
 
   useEffect(() => {

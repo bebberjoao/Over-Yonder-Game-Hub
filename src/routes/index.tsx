@@ -44,12 +44,6 @@ function Index() {
           <span className="text-xs sm:text-sm px-3 py-1.5 rounded-full bg-primary/15 text-primary font-semibold border border-primary/30">
             🎮 Game Hub
           </span>
-          <Link
-            to="/teacher"
-            className="inline-flex items-center gap-1.5 text-xs sm:text-sm px-3 py-1.5 rounded-full font-semibold border transition-colors border-border bg-card hover:border-primary hover:text-primary"
-          >
-            <GraduationCap className="h-3.5 w-3.5" /> Teacher Area
-          </Link>
         </div>
       </header>
 
