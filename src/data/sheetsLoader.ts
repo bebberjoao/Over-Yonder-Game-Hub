@@ -80,6 +80,10 @@ function csvToRecords(csv: string): SheetRow[] {
 export async function fetchWordsFromSheets(config: SheetsConfig): Promise<Record<AgeGroup, WordEntry[]>> {
   const { spreadsheetId, csvUrl, sheetName = "0" } = config;
 
+  if (!csvUrl && !spreadsheetId) {
+    throw new Error("Missing Google Sheets CSV URL or spreadsheet ID.");
+  }
+
   const url = csvUrl || `https://docs.google.com/spreadsheets/d/${spreadsheetId}/export?format=csv&gid=${sheetName}`;
 
   const response = await fetch(url);

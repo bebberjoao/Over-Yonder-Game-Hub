@@ -3,8 +3,9 @@ import { AgeGroup, WordEntry, defaultWordsByAge } from "@/data/words";
 import { fetchWordsFromSheets } from "@/data/sheetsLoader";
 
 const STORAGE_KEY = "oy-words-v1";
+const DEFAULT_SHEETS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLUQ2whcqlo9O8o7WNQ0PiOcYWeVnMucHvUVtc5mgab-Oqva6hW75l8MNA7mX55pfSR3USwRsRG7V8/pub?output=csv";
 const SHEETS_ID = import.meta.env.VITE_SHEETS_ID || "";
-const SHEETS_CSV_URL = import.meta.env.VITE_SHEETS_CSV_URL || "";
+const SHEETS_CSV_URL = import.meta.env.VITE_SHEETS_CSV_URL || DEFAULT_SHEETS_CSV_URL;
 
 type Dict = Record<AgeGroup, WordEntry[]>;
 
