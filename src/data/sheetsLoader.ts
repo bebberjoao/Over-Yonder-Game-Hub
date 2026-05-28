@@ -1,7 +1,8 @@
 import { AgeGroup, WordEntry } from "./words";
 
 export interface SheetsConfig {
-  spreadsheetId: string;
+  spreadsheetId?: string;
+  csvUrl?: string;
   sheetName?: string; // Default: first sheet
 }
 
@@ -77,10 +78,9 @@ function csvToRecords(csv: string): SheetRow[] {
 }
 
 export async function fetchWordsFromSheets(config: SheetsConfig): Promise<Record<AgeGroup, WordEntry[]>> {
-  const { spreadsheetId, sheetName = "0" } = config;
+  const { spreadsheetId, csvUrl, sheetName = "0" } = config;
 
-  // Google Sheets export URL (CSV format)
-  const url = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/export?format=csv&gid=${sheetName}`;
+  const url = csvUrl || `https://docs.google.com/spreadsheets/d/${spreadsheetId}/export?format=csv&gid=${sheetName}`;
 
   const response = await fetch(url);
   if (!response.ok) {

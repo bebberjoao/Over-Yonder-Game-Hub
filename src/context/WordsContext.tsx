@@ -4,6 +4,7 @@ import { fetchWordsFromSheets } from "@/data/sheetsLoader";
 
 const STORAGE_KEY = "oy-words-v1";
 const SHEETS_ID = import.meta.env.VITE_SHEETS_ID || "";
+const SHEETS_CSV_URL = import.meta.env.VITE_SHEETS_CSV_URL || "";
 
 type Dict = Record<AgeGroup, WordEntry[]>;
 
@@ -31,10 +32,11 @@ export function WordsProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     (async () => {
       try {
-        // Try to load from Google Sheets first if ID is configured
-        if (SHEETS_ID) {
+        // Try to load from Google Sheets first if a CSV URL or sheet ID is configured
+        if (SHEETS_CSV_URL || SHEETS_ID) {
           const sheetsData = await fetchWordsFromSheets({
-            spreadsheetId: SHEETS_ID,
+            spreadsheetId: SHEETS_ID || undefined,
+            csvUrl: SHEETS_CSV_URL || undefined,
           });
           setWords(sheetsData);
           setHydrated(true);
