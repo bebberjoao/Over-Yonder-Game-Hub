@@ -3,7 +3,6 @@ import { ArrowLeft } from "lucide-react";
 import { ReactNode } from "react";
 import { AgePicker } from "./AgePicker";
 import { AgeGroup } from "@/data/words";
-import { PlayersBar } from "./PlayersBar";
 
 interface Props {
   title: string;
@@ -37,7 +36,7 @@ export function GameShell({ title, emoji, description, age, onAgeChange, childre
           <p className="text-muted-foreground text-sm sm:text-base mb-4">{description}</p>
           <AgePicker value={age} onChange={onAgeChange} />
         </div>
-        <PlayersBar showTurn={showTurn} onTurnChange={onTurnChange} />
+        {/* PlayersBar removed per request */}
         {children}
       </main>
     </div>

@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, ReactNode } from "react";
-import { AgeGroup, WordEntry, defaultWordsByAge } from "@/data/words";
+import { AgeGroup, WordEntry, defaultWordsByAge, shuffle } from "@/data/words";
 import { fetchWordsFromSheets } from "@/data/sheetsLoader";
 
 const STORAGE_KEY = "oy-words-v1";
@@ -18,6 +18,8 @@ interface Ctx {
   resetAll: () => void;
   exportJson: () => string;
   importJson: (raw: string) => boolean;
+  getRandomWords: (age: AgeGroup, count?: number) => WordEntry[];
+  getDistractors: (age: AgeGroup, count?: number) => WordEntry[];
 }
 
 const WordsContext = createContext<Ctx | null>(null);
@@ -93,7 +95,42 @@ export function WordsProvider({ children }: { children: ReactNode }) {
     } catch { return false; }
   }, []);
 
-  const value = useMemo<Ctx>(() => ({ words, addWord, updateWord, removeWord, resetAge, resetAll, exportJson, importJson }), [words, addWord, updateWord, removeWord, resetAge, resetAll, exportJson, importJson]);
+  const getRandomWords = useCallback((age: AgeGroup, count = 1) => {
+    const pool = (words[age] ?? []).filter((e) => e && e.word && e.translation);
+    if (count <= 0) return [];
+    if (pool.length === 0) return [];
+    if (count >= pool.length) return shuffle(pool);
+    const copy = [...pool];
+    const out: WordEntry[] = [];
+    for (let i = 0; i < count; i++) {
+      const idx = Math.floor(Math.random() * copy.length);
+      out.push(copy.splice(idx, 1)[0]);
+    }
+    return out;
+  }, [words]);
+
+  const getDistractors = useCallback((age: AgeGroup, count = 3) => {
+    // collect pool from other age groups
+    const others: WordEntry[] = [];
+    (Object.keys(words) as AgeGroup[]).forEach((a) => {
+      if (a === age) return;
+      (words[a] ?? []).forEach((e) => {
+        if (e && e.word && e.translation) others.push(e);
+      });
+    });
+    if (count <= 0) return [];
+    if (others.length === 0) return [];
+    if (count >= others.length) return shuffle(others);
+    const copy = [...others];
+    const out: WordEntry[] = [];
+    for (let i = 0; i < count; i++) {
+      const idx = Math.floor(Math.random() * copy.length);
+      out.push(copy.splice(idx, 1)[0]);
+    }
+    return out;
+  }, [words]);
+
+  const value = useMemo<Ctx>(() => ({ words, addWord, updateWord, removeWord, resetAge, resetAll, exportJson, importJson, getRandomWords, getDistractors }), [words, addWord, updateWord, removeWord, resetAge, resetAll, exportJson, importJson, getRandomWords, getDistractors]);
   return <WordsContext.Provider value={value}>{children}</WordsContext.Provider>;
 }
 

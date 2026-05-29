@@ -102,33 +102,39 @@ export async function fetchWordsFromSheets(config: SheetsConfig): Promise<Record
 
   records.forEach((row) => {
     // Kids
-    if (row.KDEN && row.KDPT) {
+    const kden = row.KDEN?.trim() || "";
+    const kdpt = row.KDPT?.trim() || "";
+    if (kden && kdpt) {
       result.kids.push({
-        word: row.KDEN.trim().toLowerCase(),
-        translation: row.KDPT.trim(),
-        hint: row.KDDica?.trim() || row.KDPT.trim(),
+        word: kden.toLowerCase(),
+        translation: kdpt,
+        hint: row.KDDica?.trim() || kdpt,
         emoji: row.KDEmoji?.trim() || "✨",
         iconUrl: undefined,
       });
     }
 
     // Teens
-    if (row.TNEN && row.TNPT) {
+    const tnen = row.TNEN?.trim() || "";
+    const tnpt = row.TNPT?.trim() || "";
+    if (tnen && tnpt) {
       result.teens.push({
-        word: row.TNEN.trim().toLowerCase(),
-        translation: row.TNPT.trim(),
-        hint: row.TNDica?.trim() || row.TNPT.trim(),
+        word: tnen.toLowerCase(),
+        translation: tnpt,
+        hint: row.TNDica?.trim() || tnpt,
         emoji: row.TNEmoji?.trim() || "✨",
         iconUrl: undefined,
       });
     }
 
     // Adults
-    if (row.ADEN && row.ADPT) {
+    const aden = row.ADEN?.trim() || "";
+    const adpt = row.ADPT?.trim() || "";
+    if (aden && adpt) {
       result.adults.push({
-        word: row.ADEN.trim().toLowerCase(),
-        translation: row.ADPT.trim(),
-        hint: row.ADDica?.trim() || row.ADPT.trim(),
+        word: aden.toLowerCase(),
+        translation: adpt,
+        hint: row.ADDica?.trim() || adpt,
         emoji: row.ADEmoji?.trim() || "✨",
         iconUrl: undefined,
       });
